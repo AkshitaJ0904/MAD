@@ -1,115 +1,99 @@
-package com.example.madassignment;
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
 
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Unit Converter"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-public class MainActivity extends AppCompatActivity {
+    <TextView
+        android:id="@+id/fromLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From:"
+        android:textSize="16sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    private EditText inputValue;
-    private Spinner fromUnitSpinner;
-    private Spinner toUnitSpinner;
-    private Button convertButton;
-    private TextView resultTextView;
+    <Spinner
+        android:id="@+id/fromUnitSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toTopOf="@id/fromLabel"
+        app:layout_constraintBottom_toBottomOf="@id/fromLabel"
+        app:layout_constraintStart_toEndOf="@id/fromLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    private String[] units = {"Feet", "Inches", "Centimeters", "Meters", "Yards"};
+    <EditText
+        android:id="@+id/inputEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter value"
+        android:inputType="numberDecimal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/fromUnitSpinner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    <TextView
+        android:id="@+id/toLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To:"
+        android:textSize="16sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/inputEditText"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        // Initialize views
-        inputValue = findViewById(R.id.inputValue);
-        fromUnitSpinner = findViewById(R.id.fromUnitSpinner);
-        toUnitSpinner = findViewById(R.id.toUnitSpinner);
-        convertButton = findViewById(R.id.convertButton);
-        resultTextView = findViewById(R.id.resultTextView);
+    <Spinner
+        android:id="@+id/toUnitSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toTopOf="@id/toLabel"
+        app:layout_constraintBottom_toBottomOf="@id/toLabel"
+        app:layout_constraintStart_toEndOf="@id/toLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        // Set up spinners with units
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, units);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    <TextView
+        android:id="@+id/resultLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Result:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/toUnitSpinner"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        fromUnitSpinner.setAdapter(adapter);
-        toUnitSpinner.setAdapter(adapter);
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="end"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toTopOf="@id/resultLabel"
+        app:layout_constraintBottom_toBottomOf="@id/resultLabel"
+        app:layout_constraintStart_toEndOf="@id/resultLabel"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        // Set up convert button click listener
-        convertButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                convertUnits();
-            }
-        });
-    }
-
-    private void convertUnits() {
-        // Get input value
-        String inputValueStr = inputValue.getText().toString();
-        if (inputValueStr.isEmpty()) {
-            Toast.makeText(this, "Please enter a value", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        double value;
-        try {
-            value = Double.parseDouble(inputValueStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Invalid number format", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Get selected units
-        String fromUnit = units[fromUnitSpinner.getSelectedItemPosition()];
-        String toUnit = units[toUnitSpinner.getSelectedItemPosition()];
-
-        // Convert to meters first (as our intermediate unit)
-        double valueInMeters = convertToMeters(value, fromUnit);
-
-        // Then convert from meters to target unit
-        double result = convertFromMeters(valueInMeters, toUnit);
-
-        // Display result
-        String resultText = String.format("%.4f %s = %.4f %s", value, fromUnit, result, toUnit);
-        resultTextView.setText(resultText);
-    }
-
-    private double convertToMeters(double value, String fromUnit) {
-        switch (fromUnit) {
-            case "Feet":
-                return value * 0.3048;
-            case "Inches":
-                return value * 0.0254;
-            case "Centimeters":
-                return value * 0.01;
-            case "Meters":
-                return value;
-            case "Yards":
-                return value * 0.9144;
-            default:
-                return 0;
-        }
-    }
-
-    private double convertFromMeters(double meters, String toUnit) {
-        switch (toUnit) {
-            case "Feet":
-                return meters / 0.3048;
-            case "Inches":
-                return meters / 0.0254;
-            case "Centimeters":
-                return meters / 0.01;
-            case "Meters":
-                return meters;
-            case "Yards":
-                return meters / 0.9144;
-            default:
-                return 0;
-        }
-    }
-}
+</androidx.constraintlayout.widget.ConstraintLayout>
